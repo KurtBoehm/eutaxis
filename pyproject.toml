@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eutaxis"
+description = "Code cleanup for C++, Python, and Meson"
+dynamic = ["version"]
+readme = "ReadMe.md"
+requires-python = ">=3.12"
+license = "MPL-2.0"
+license-files = ["License"]
+authors = [{ name = "Kurt Böhm", email = "kurbo96@gmail.com" }]
+keywords = [
+  "formatter",
+  "code-formatting",
+  "code-cleanup",
+  "c++",
+  "python",
+  "meson",
+]
+classifiers = [
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development",
+  "Topic :: Software Development :: Build Tools",
+  "Topic :: Software Development :: Code Generators",
+  "Topic :: Utilities",
+]
+dependencies = ["argcomplete", "pydantic", "GitPython", "pyyaml"]
+
+[tool.setuptools.dynamic]
+version = { attr = "eutaxis.__version__" }
+
+[project.urls]
+Homepage = "https://github.com/KurtBoehm/eutaxis"
+Repository = "https://github.com/KurtBoehm/eutaxis"
+Issues = "https://github.com/KurtBoehm/eutaxis/issues"
+
+[project.scripts]
+eutaxis = "eutaxis:run"

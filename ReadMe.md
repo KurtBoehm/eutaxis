@@ -1,0 +1,107 @@
+# 🧹 Eutaxis
+
+Eutaxis (from Ancient Greek _εὖ_ “good” + _τάξις_ “arrangement, ordering”) is a command-line tool for normalizing and cleaning up project code layouts.
+It focuses on consistent headers, include ordering, and formatting across common project structures.
+
+Currently supported:
+
+- Python projects:
+  - `isort` and `ruff`
+  - optional licence headers
+- Meson projects:
+  - `muon fmt`
+  - optional licence headers
+- C++ projects:
+  - header guards
+  - include ordering
+  - Meson targets
+  - simple qualifier reordering
+  - optional licence headers
+
+## 📦 Installation
+
+Eutaxis is a normal Python package:
+
+```bash
+pip install eutaxis
+```
+
+## 🚀 Usage
+
+Eutaxis is driven by “workers” (one per language):
+
+```bash
+eutaxis <worker> [options]
+```
+
+Examples:
+
+```bash
+# Clean a Python project in the current directory
+eutaxis python
+
+# Clean a Meson project
+eutaxis meson -c muon.cfg
+
+# Clean a C++ project using .eutaxis config
+eutaxis cpp
+```
+
+To see options:
+
+```bash
+eutaxis -h
+eutaxis python -h
+eutaxis meson -h
+eutaxis cpp -h
+```
+
+## ⚙️ C++ Configuration
+
+C++ clean-up is configured via a `.eutaxis` YAML file in the project root, for example:
+
+```yaml
+skip_meson: false
+license: MPL-2.0
+url: https://github.com/your/repo
+project_name: mylib
+ignore_parent_header:
+  - include/mylib/detail
+ignore_folders:
+  - external
+```
+
+The C++ worker expects the following layout:
+
+- headers: `include/<project_name>/...`
+- sources (optional): `src/`, `test/`, `perf/`, `tools/`
+
+## 🧠 Behaviour Overview
+
+- Licence/file headers:
+  - Inserts or normalizes licence/file headers for supported languages.
+- C++:
+  - Normalizes header guards.
+  - Maintains “base headers” `<dir>.hpp` with an IWYU export block.
+  - Re-sorts and groups includes into:
+    - C++ standard headers
+    - other system headers
+    - project headers
+    - relative headers
+  - Adjusts a few qualifiers (e.g. `constexpr explicit` → `explicit constexpr`).
+  - Updates Meson snippets for per-source targets.
+- Python and Meson:
+  - Runs external formatters:
+    - Python: `isort`, `ruff format`
+    - Meson: `muon fmt`
+
+## ⌨️ Shell Completion
+
+Eutaxis integrates with [`argcomplete`](https://github.com/kislyuk/argcomplete).
+Once `argcomplete` is installed and enabled in your shell,
+
+```bash
+eutaxis <TAB>
+```
+
+can be used to complete available workers and options.
