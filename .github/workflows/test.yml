@@ -20,6 +20,8 @@ jobs:
           meson setup build
           meson compile -C build
           sudo meson install -C build
+          cd ..
+          rm -rf muon
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
