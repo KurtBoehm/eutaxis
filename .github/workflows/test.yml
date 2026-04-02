@@ -18,7 +18,8 @@ jobs:
           ./build/muon-bootstrap setup build
           ./build/muon-bootstrap -C build samu
           ./build/muon -C build test -R
-          ./build/muon -C build install
+          sudo ./build/muon -C build install
+          cd ..
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
