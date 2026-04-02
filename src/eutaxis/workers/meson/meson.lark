@@ -1,0 +1,129 @@
+start: build_definition
+
+IF: "if"
+ELIF: "elif"
+ELSE: "else"
+ENDIF: "endif"
+FOREACH: "foreach"
+ENDFOREACH: "endforeach"
+JUMP_KW: "break" | "continue"
+
+LAND: "and"
+LOR: "or"
+LNOT: "not"
+CONTAINS: "in"
+
+PLUS: "+"
+MINUS: "-"
+
+DEQUALS.1: "=="
+NEQUALS: "!="
+
+EQUALS: "="
+PEQUALS.1: "+="
+MULTIPLICATIVE_OPERATOR: "*" | "/" | "%"
+RELATIONAL_OPERATOR: ">" | "<" | ">=" | "<="
+
+_STRING_ESC_INNER: /.*?/ /(?<!\\)(\\\\)*?/
+STRING_SIMPLE: "'" _STRING_ESC_INNER "'"
+STRING_FORMAT.1: "f" "'" _STRING_ESC_INNER "'"
+STRING_MULTILINE: "'''" /(.|[\r\n])*?/ /(?<!\\)(\\\\)*?/ "'''"
+
+BOOLEAN_LITERAL: "true" | "false"
+
+BINARY_LITERAL: "0b" /[01]+/
+DECIMAL_LITERAL: "0" | /[1-9][0-9]*/
+HEX_LITERAL: "0x" /[a-fA-F0-9]+/
+OCTAL_LITERAL: "0o" /[0-7]+/
+
+IDENTIFIER: /[a-zA-Z_][a-zA-Z_0-9]*/
+
+DOT: "."
+COMMA: ","
+COLON: ":"
+QUESTION_MARK: "?"
+
+LBRACE: "{"
+RBRACE: "}"
+LBRACKET: "["
+RBRACKET: "]"
+COMMENT: "#" /[^\r\n]*/ NEWLINE
+WS: /[ \t]+/
+%import common.NEWLINE
+
+// %ignore COMMENT
+%ignore WS
+
+build_definition: (NEWLINE | statement)*
+
+assignment_expression: expression assignment_operator expression
+function_expression: id_expression "(" argument_list? ")"
+?postfix_expression: primary_expression postfix_op*
+                   | function_expression postfix_op*
+postfix_op: LBRACKET expression RBRACKET -> subscript_postfix
+          | "." id_expression "(" argument_list? ")" -> method_postfix
+
+?unary_expression: postfix_expression | unary_operator unary_expression
+?multiplicative_expression: unary_expression (multiplicative_operator unary_expression)*
+?additive_expression: multiplicative_expression (additive_operator multiplicative_expression)*
+?relational_expression: additive_expression (relational_operator additive_expression)*
+?equality_expression: relational_expression (equality_operator relational_expression)*
+?logical_and_expression: equality_expression (LAND equality_expression)*
+?logical_or_expression: logical_and_expression (LOR logical_and_expression)*
+?conditional_expression: logical_or_expression (QUESTION_MARK expression COLON expression)?
+?expression: conditional_expression
+
+?primary_expression: literal
+                   | "(" expression ")" -> parenthesized_expression
+                   | id_expression
+
+expression_list: COMMENT* (expression | COMMENT) (COMMA COMMENT* expression)* COMMA? COMMENT*
+condition: expression
+
+assignment_statement: assignment_expression
+expression_statement: expression
+iteration_statement: FOREACH identifier_list COLON expression NEWLINE (statement | jump_statement)* ENDFOREACH
+
+jump_statement: JUMP_KW NEWLINE
+selection_statement: IF condition NEWLINE statement* (ELIF condition NEWLINE statement*)* (ELSE NEWLINE statement*)? ENDIF
+
+statement: (assignment_statement | expression_statement | selection_statement | iteration_statement) (NEWLINE | COMMENT) | COMMENT
+
+argument_list: argument (COMMA COMMENT* argument)* COMMA?
+// WARNING: This does not enforce the rule that positional arguments must come before keyword arguments!
+//          Sadly, this simplification is necessary to make the grammar work with LALR(1).
+argument: id_expression ":" expression -> keyword_argument
+        | expression -> positional_argument
+
+additive_operator: PLUS | MINUS
+assignment_operator: EQUALS | PEQUALS
+equality_operator: DEQUALS | NEQUALS
+multiplicative_operator: MULTIPLICATIVE_OPERATOR
+relational_operator: RELATIONAL_OPERATOR | CONTAINS | LNOT CONTAINS
+unary_operator: LNOT | MINUS
+
+identifier_list: id_expression (COMMA id_expression)*
+?id_expression: IDENTIFIER
+
+//////////////
+// Literals //
+//////////////
+
+literal: boolean_literal | integer_literal | string_literal | array_literal | dictionary_literal
+
+boolean_literal: BOOLEAN_LITERAL
+
+integer_literal: binary_literal | decimal_literal | octal_literal | hex_literal
+
+binary_literal: BINARY_LITERAL
+decimal_literal: DECIMAL_LITERAL
+octal_literal: OCTAL_LITERAL
+hex_literal: HEX_LITERAL
+
+string_literal: STRING_SIMPLE | STRING_FORMAT | STRING_MULTILINE
+
+array_literal: LBRACKET expression_list? RBRACKET
+
+key_value_item: expression COLON expression
+key_value_list: key_value_item (COMMA COMMENT* key_value_item)* COMMA?
+dictionary_literal: LBRACE key_value_list? RBRACE

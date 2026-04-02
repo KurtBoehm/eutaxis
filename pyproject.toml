@@ -33,10 +33,14 @@ classifiers = [
   "Topic :: Software Development :: Code Generators",
   "Topic :: Utilities",
 ]
-dependencies = ["argcomplete", "pydantic", "GitPython", "pyyaml"]
-
-[tool.setuptools.dynamic]
-version = { attr = "eutaxis.__version__" }
+dependencies = [
+  "argcomplete",
+  "colorama",
+  "GitPython",
+  "pydantic",
+  "lark",
+  "pyyaml",
+]
 
 [project.urls]
 Homepage = "https://github.com/KurtBoehm/eutaxis"
@@ -45,3 +49,12 @@ Issues = "https://github.com/KurtBoehm/eutaxis/issues"
 
 [project.scripts]
 eutaxis = "eutaxis:run"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = { attr = "eutaxis.__version__" }
+
+[tool.setuptools.package-data]
+"eutaxis.workers.meson" = ["meson.lark"]

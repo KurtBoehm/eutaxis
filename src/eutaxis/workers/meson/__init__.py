@@ -9,14 +9,13 @@ from __future__ import annotations
 from argparse import ArgumentParser
 from collections.abc import Iterable
 from pathlib import Path
-from subprocess import run as _run
 from typing import Any, Final, final, override
 
 from pydantic import BaseModel
 
-from .licenses import License, license_header
-from .repository import project_url
-from .worker import Worker
+from ..licenses import License, license_header
+from ..repository import project_url
+from ..worker import Worker
 
 
 class Args(BaseModel):
@@ -30,7 +29,7 @@ def iterdir_recursive(directory: Path, *, include_wraps: bool) -> Iterable[Path]
     """Yield Meson-related files under ``d``."""
     for p in sorted(directory.iterdir()):
         if p.is_dir():
-            if p.name not in {"subprojects", ".git"}:
+            if p.name not in {"packagecache", "subprojects", ".git"}:
                 yield from iterdir_recursive(p, include_wraps=include_wraps)
         else:
             if p.name in {"meson.build", "meson_options.txt"}:
@@ -81,6 +80,8 @@ class MesonWorker(Worker):
     @staticmethod
     @override
     def run(raw_args: dict[str, Any]) -> None:
+        from .lark_clean import lark_clean
+
         args: Final[Args] = Args.model_validate(raw_args)
 
         proj_path: Final[Path] = args.project_path or Path.cwd()
@@ -105,13 +106,4 @@ class MesonWorker(Worker):
         if not fmt_targets:
             return
 
-        _run(
-            [
-                "muon",
-                "fmt",
-                "-c",
-                args.muon_cfg,
-                "-i",
-                *fmt_targets,
-            ]
-        )
+        lark_clean(fmt_targets, config=args.muon_cfg, in_place=True, format=True)
