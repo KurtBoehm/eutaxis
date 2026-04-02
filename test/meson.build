@@ -23,8 +23,8 @@ proj_name = meson.project_name()
 proj_version = meson.project_version()
 proj_ver_arr = proj_version.split('.')
 
-build_machine = meson.current_build_machine()
-host_machine = meson.current_host_machine()
+build_mach = meson.current_build_machine()
+host_mach = meson.current_host_machine()
 
 opt_a = get_option('opt_a')
 opt_b = get_option('opt_b')
@@ -51,9 +51,9 @@ if has_std_filesystem
   global_args += ['-DUSE_STD_FILESYSTEM']
 endif
 
-if host_machine.system() == 'windows'
+if host_mach.system() == 'windows'
   global_args += ['-DPLATFORM_WINDOWS']
-elif host_machine.system() == 'darwin'
+elif host_mach.system() == 'darwin'
   global_args += ['-DPLATFORM_MACOS']
 else
   global_args += ['-DPLATFORM_UNIX']
@@ -285,7 +285,7 @@ summary(
   {
     'Project name': proj_name,
     'Version': proj_version,
-    'Host': host_machine.system(),
+    'Host': host_mach.system(),
     'Optional lib': opt_dep.found(),
     'fmt': fmt_dep.found(),
     'Feature X': feature_enabled,
