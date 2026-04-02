@@ -9,6 +9,7 @@ Currently supported:
   - `isort` and `ruff`
   - optional licence headers
 - Meson projects:
+  - Lark-based argument reordering for many functions
   - `muon fmt`
   - optional licence headers
 - C++ projects:
@@ -91,9 +92,9 @@ The C++ worker expects the following layout:
   - Adjusts a few qualifiers (e.g. `constexpr explicit` → `explicit constexpr`).
   - Updates Meson snippets for per-source targets.
 - Python and Meson:
-  - Runs external formatters:
+  - Runs formatters:
     - Python: `isort`, `ruff format`
-    - Meson: `muon fmt`
+    - Meson: Lark-based argument reordering for many functions, `muon fmt`
 
 ## ⌨️ Shell Completion
 
