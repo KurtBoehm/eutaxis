@@ -12,15 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
+          sudo apt-get update
+          sudo apt-get install python3 ninja-build meson
+      - run: |
           git clone --branch 0.5.0 --depth 1 https://github.com/muon-build/muon.git
           cd muon
-          ./bootstrap.sh build
-          ./build/muon-bootstrap setup build
-          ./build/muon-bootstrap -C build samu
-          ./build/muon -C build test -R
-          sudo ./build/muon -C build install
-          cd ..
-          rm -rf muon
+          meson setup build
+          meson compile -C build
+          meson install -C build
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
