@@ -277,6 +277,51 @@ class ArgumentSorter(Transformer[Token, Tree[Token]]):
         return self._handle_function("method_postfix", children, verbose=False)
 
 
+def lark_parser() -> Lark:
+    from importlib import resources
+
+    from . import __name__ as pkg_name
+
+    lark_resource = resources.files(pkg_name) / "meson.lark"
+    meson_grammar = lark_resource.read_text(encoding="utf-8")
+
+    return Lark(
+        meson_grammar,
+        start="build_definition",
+        parser="lalr",
+        lexer="basic",
+        postlex=StripNewlineInParens(),
+        propagate_positions=True,
+        maybe_placeholders=False,
+    )
+
+
+def lark_clean_code(
+    lark: Lark,
+    code: str,
+    *,
+    config: Path | None = None,
+    format: bool,
+) -> str:
+    trans = ArgumentSorter().transform(lark.parse(code))
+    recon = Reconstructor(lark).reconstruct(trans)
+    if format:
+        with TemporaryDirectory() as tmp:
+            tmp_file = Path(tmp) / "meson.build"
+            tmp_file.write_text(recon)
+            cmd = [
+                "muon",
+                "fmt",
+                *(["-c", config] if config else []),
+                "-i",
+                tmp_file,
+            ]
+            run(cmd, check=True)
+
+            return tmp_file.read_text()
+    return recon
+
+
 def lark_clean(
     src_paths: list[Path],
     *,
@@ -284,10 +329,6 @@ def lark_clean(
     in_place: bool = True,
     format: bool = True,
 ) -> None:
-    from importlib import resources
-
-    from . import __name__ as pkg_name
-
     """
     Clean-up Meson files using a Lark grammar.
 
@@ -304,48 +345,18 @@ def lark_clean(
     :param in_place: Rewrite the input files in place instead of printing to ``stdout``.
     :param format: Enable ``muon fmt`` post-processing.
     """
-    lark_resource = resources.files(pkg_name) / "meson.lark"
-    meson_grammar = lark_resource.read_text(encoding="utf-8")
-
-    parser = Lark(
-        meson_grammar,
-        start="build_definition",
-        parser="lalr",
-        lexer="basic",
-        postlex=StripNewlineInParens(),
-        propagate_positions=True,
-        maybe_placeholders=False,
-    )
+    lark = lark_parser()
 
     for src_path in src_paths:
         print(src_path)
+
         code = src_path.read_text(encoding="utf-8")
-        tree = parser.parse(code)
+        dst = lark_clean_code(lark, code, config=config, format=format)
 
-        trans = ArgumentSorter().transform(tree)
-
-        recon = Reconstructor(parser).reconstruct(trans)
-
-        if format:
-            with TemporaryDirectory() as tmp:
-                tmp_file = Path(tmp) / "meson.build"
-                tmp_file.write_text(recon)
-                cmd = [
-                    "muon",
-                    "fmt",
-                    *(["-c", config] if config else []),
-                    "-i",
-                    tmp_file,
-                ]
-                run(cmd, check=True)
-
-                dst = tmp_file.read_text()
-                if in_place:
-                    if code != dst:
-                        src_path.write_text(dst)
-                    else:
-                        print(f"{Fore.GREEN}{src_path} remains unchanged!{Fore.RESET}")
-                else:
-                    print(dst, end="")
+        if code != dst:
+            if in_place:
+                src_path.write_text(dst)
+            else:
+                print(dst, end="")
         else:
-            print(recon)
+            print(f"{Fore.GREEN}{src_path} remains unchanged!{Fore.RESET}")

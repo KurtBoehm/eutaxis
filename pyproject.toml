@@ -42,6 +42,9 @@ dependencies = [
   "pyyaml",
 ]
 
+[project.optional-dependencies]
+dev = ["pydata-sphinx-theme", "pytest", "sphinx", "sphinx-autoapi"]
+
 [project.urls]
 Homepage = "https://github.com/KurtBoehm/eutaxis"
 Repository = "https://github.com/KurtBoehm/eutaxis"
