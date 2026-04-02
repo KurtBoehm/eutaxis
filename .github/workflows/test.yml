@@ -20,6 +20,7 @@ jobs:
           ./build/muon -C build test -R
           sudo ./build/muon -C build install
           cd ..
+          rm -rf muon
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
