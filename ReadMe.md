@@ -1,5 +1,8 @@
 # 🧹 Eutaxis
 
+[![PyPI - Version](https://img.shields.io/pypi/v/eutaxis?logo=pypi&label=PyPI)](https://pypi.org/project/eutaxis/)
+[![Test Workflow Status](https://img.shields.io/github/actions/workflow/status/KurtBoehm/eutaxis/test.yml?logo=github&label=Tests)](https://github.com/KurtBoehm/eutaxis/actions/workflows/test.yml)
+
 Eutaxis (from Ancient Greek _εὖ_ “good” + _τάξις_ “arrangement, ordering”) is a command-line tool for normalizing and cleaning up project code layouts.
 It focuses on consistent headers, include ordering, and formatting across common project structures.
 
@@ -21,7 +24,7 @@ Currently supported:
 
 ## 📦 Installation
 
-Eutaxis is a normal Python package:
+Eutaxis is [available on PyPI](https://pypi.org/project/eutaxis/) and can be installed as usual, for example:
 
 ```bash
 pip install eutaxis
