@@ -19,7 +19,7 @@ from .worker import Worker
 
 
 class Config(BaseModel):
-    skip_meson: bool = False
+    fix_meson: bool = False
     license: License | None = None
     url: str | None = None
     project_name: str | None = None
@@ -95,7 +95,7 @@ class CppWorker(Worker):
                     ignore_folders=ignore_folders,
                 )
 
-            if not conf.skip_meson:
+            if conf.fix_meson:
                 for p in source_paths:
                     refactor.fix_meson(p)
 

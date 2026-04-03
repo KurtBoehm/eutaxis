@@ -65,7 +65,7 @@ eutaxis cpp -h
 C++ clean-up is configured via a `.eutaxis` YAML file in the project root, for example:
 
 ```yaml
-skip_meson: false
+fix_meson: false
 license: MPL-2.0
 url: https://github.com/your/repo
 project_name: mylib
