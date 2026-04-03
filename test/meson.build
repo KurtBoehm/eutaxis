@@ -8,14 +8,14 @@ project(
   'example-project',
   ['c', 'cpp'],
   version: '1.0.0',
-  license: 'MPL-2.0',
+  meson_version: '>=1.2.0',
   default_options: [
     'c_std=c11',
     'cpp_std=c++20',
     'warning_level=3',
     'buildtype=debugoptimized',
   ],
-  meson_version: '>=1.2.0',
+  license: 'MPL-2.0',
 )
 
 # Basic project metadata and build options
@@ -140,9 +140,9 @@ endif
 # Example of a dependency with fallback
 fmt_dep = dependency(
   'fmt',
+  version: '>=9.0.0',
   required: false,
   fallback: ['fmt-subproject', 'fmt_dep'],
-  version: '>=9.0.0',
 )
 if fmt_dep.found()
   global_deps += [fmt_dep]
@@ -215,16 +215,9 @@ lib = library(
   install_dir: get_option('libdir'),
 )
 
-# A small helper library (object library usage)
-helper_obj = object_library(
-  'helper-obj',
-  'src/helper.c',
-  include_directories: inc_root,
-)
-
 helper_lib = static_library(
   'helper',
-  helper_obj,
+  'src/helper.c',
   include_directories: inc_root,
   install: true,
 )
