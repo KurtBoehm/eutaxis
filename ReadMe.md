@@ -109,3 +109,7 @@ eutaxis <TAB>
 ```
 
 can be used to complete available workers and options.
+
+## 📜 Licence
+
+This library is licensed under the terms of the Mozilla Public Licence 2.0, provided in [`License`](https://github.com/KurtBoehm/eutaxis/blob/main/License).
