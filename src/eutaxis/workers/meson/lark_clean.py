@@ -95,6 +95,7 @@ def filter_branches(children: list[Branch[Token]]) -> list[Branch[Token]]:
 # Function name → preferred keyword argument order.
 _library_order = [
     "sources",
+    "objects",
     "include_directories",
     "dependencies",
     "link_with",
@@ -154,6 +155,8 @@ _kwargs_order: dict[str, list[str]] = {
         "install",
         "install_dir",
     ],
+    "extract_objects": [],
+    "extract_all_objects": ["recursive"],
     "install_data": [
         "sources",
         "install_dir",
