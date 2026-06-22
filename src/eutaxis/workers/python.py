@@ -106,5 +106,5 @@ class PythonWorker(Worker):
                 if not text.startswith(header):
                     path.write_text(header + text, encoding="utf8")
 
-        _run(["isort", *paths])
-        _run(["ruff", "format", *paths])
+        _run(["isort", *paths], check=True)
+        _run(["ruff", "format", *paths], check=True)

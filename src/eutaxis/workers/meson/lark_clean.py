@@ -144,11 +144,12 @@ _kwargs_order: dict[str, list[str]] = {
         "compile_args",
         "version",
     ],
-    "dependency": ["language", "version", "required", "fallback"],
+    "dependency": ["language", "version", "modules", "required", "fallback"],
     "executable": [
         "include_directories",
         "dependencies",
         "link_with",
+        "override_options",
         "c_args",
         "cpp_args",
         "fortran_args",
