@@ -453,7 +453,7 @@ class CppRefactor:
             if not first_non_comment:
                 return False
 
-            self.write(p, prefix + "\n\n" + txt)
+            self.write(p, prefix + "\n" + txt)
             return False
 
         self.recurse(inc_path, inner)
