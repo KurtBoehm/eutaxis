@@ -93,7 +93,9 @@ def filter_branches(children: list[Branch[Token]]) -> list[Branch[Token]]:
 
 
 # Function name → preferred keyword argument order.
-_library_order = [
+
+# Shared prefix for all build target-style functions (executable, library, etc).
+_common_target_order = [
     "sources",
     "objects",
     "include_directories",
@@ -101,38 +103,95 @@ _library_order = [
     "link_with",
     "link_whole",
     "link_args",
+    "link_depends",
+    "link_language",
     "override_options",
     "pic",
+    "prelink",
+    "implicit_include_directories",
+    "gnu_symbol_visibility",
     "c_args",
     "cpp_args",
     "fortran_args",
-    "gnu_symbol_visibility",
+    "d_import_dirs",
+    "d_module_versions",
+    "d_unittest",
     "build_by_default",
+    "build_rpath",
     "install",
     "install_dir",
+    "install_mode",
+    "install_rpath",
+    "install_tag",
+    "extra_files",
+    "native",
+]
+
+# executable()-only kwargs, appended after the common block.
+_executable_order = _common_target_order + [
+    "gui_app",
+    "win_subsystem",
+    "export_dynamic",
+    "implib",
+    "pie",
+]
+
+# library()/shared_library()/static_library()-only kwargs.
+_library_order = _common_target_order + [
+    "gui_app",
+    "win_subsystem",
+    "name_prefix",
+    "name_suffix",
+    "darwin_versions",
     "version",
     "soversion",
 ]
+
 _kwargs_order: dict[str, list[str]] = {
-    "compiles": ["name", "args", "dependencies"],
+    "compiles": [
+        "name",
+        "args",
+        "include_directories",
+        "dependencies",
+        "no_builtin_args",
+        "required",
+        "werror",
+    ],
     "configure_file": [
         "input",
         "output",
         "configuration",
-        "format",
         "command",
+        "capture",
         "copy",
+        "format",
+        "output_format",
+        "encoding",
+        "depfile",
+        "macro_name",
         "build_subdir",
         "install",
         "install_dir",
+        "install_mode",
+        "install_tag",
     ],
     "custom_target": [
         "input",
         "output",
         "command",
+        "capture",
+        "feed",
+        "console",
+        "depends",
+        "depend_files",
+        "depfile",
+        "env",
+        "build_always_stale",
         "build_by_default",
         "install",
         "install_dir",
+        "install_mode",
+        "install_tag",
     ],
     "declare_dependency": [
         "sources",
@@ -142,20 +201,27 @@ _kwargs_order: dict[str, list[str]] = {
         "link_whole",
         "link_args",
         "compile_args",
+        "d_module_versions",
+        "d_import_dirs",
+        "variables",
         "version",
     ],
-    "dependency": ["language", "version", "modules", "required", "fallback"],
-    "executable": [
-        "include_directories",
-        "dependencies",
-        "link_with",
-        "override_options",
-        "c_args",
-        "cpp_args",
-        "fortran_args",
-        "install",
-        "install_dir",
+    "dependency": [
+        "language",
+        "version",
+        "modules",
+        "method",
+        "static",
+        "native",
+        "required",
+        "allow_fallback",
+        "fallback",
+        "default_options",
+        "include_type",
+        "not_found_message",
+        "disabler",
     ],
+    "executable": _executable_order,
     "extract_objects": [],
     "extract_all_objects": ["recursive"],
     "install_data": [
@@ -186,10 +252,14 @@ _kwargs_order: dict[str, list[str]] = {
     ],
     "shared_library": _library_order,
     "static_library": _library_order,
-    "subproject": ["default_options", "required"],
+    "subproject": [
+        "version",
+        "default_options",
+        "required",
+    ],
     "summary": ["section", "bool_yn", "list_sep"],
-    "run_target": [],
-    "run_command": [],
+    "run_target": ["command", "depends", "env"],
+    "run_command": ["console", "check", "capture", "env"],
 }
 
 
