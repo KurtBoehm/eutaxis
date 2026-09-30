@@ -71,7 +71,7 @@ class CppWorker(Worker):
         proj_name = conf.project_name or proj_path.name
 
         inc_path = proj_path / "include" / proj_name
-        source_paths = ["test", "perf", "src", "tools"]
+        source_paths = ["bench", "test", "perf", "src", "tools"]
         source_paths = [p for n in source_paths if (p := proj_path / n).exists()]
 
         header_paths: list[Path] = []
